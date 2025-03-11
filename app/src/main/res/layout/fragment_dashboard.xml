@@ -25,7 +25,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_below="@id/locationSearchBox"
-        android:visibility="gone"
         android:layout_marginTop="16dp">
 
         <androidx.cardview.widget.CardView
