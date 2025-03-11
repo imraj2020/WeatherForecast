@@ -15,6 +15,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.cse.weather.NetworkCall.RetrofitClient
 import com.cse.weather.Repo.WeatherRepository
 import com.cse.weather.databinding.FragmentDashboardBinding
+import com.cse.weather.ui.home.HomeViewModel
+import com.cse.weather.ui.home.HomeViewModelFactory
 import java.util.Locale
 
 
@@ -53,25 +55,27 @@ class DashboardFragment : Fragment() {
         val appid = "b8595e52bed1e1657145b697a6e278ce"
 
 
-
-
-
-
-
         // Handle item click
         binding.locationSearchBox.setOnClickListener {
 
-            val locationName   =binding.locationSearchBox.text.toString()
+            val locationName = binding.locationSearchBox.text.toString()
             Toast.makeText(requireContext(), "Selected: $locationName", Toast.LENGTH_SHORT)
                 .show()
 
 
 
-            locationName?.let { getCoordinates(it) }
+
+            getCoordinates(locationName)
+
+
+            val location = getCoordinates(locationName)
+            val latitude = location.first
+            val longitude = location.second
 
 
             viewModel.fetchWeather(latitude, longitude, appid)
 
+            Log.d("BeforeApiCALL", "Details: " + latitude + " " + longitude + " " + appid)
 
             // Observe weather data
             viewModel.weatherLiveData.observe(viewLifecycleOwner, Observer { weather ->
@@ -96,41 +100,46 @@ class DashboardFragment : Fragment() {
 
         }
 
-        viewModel.fetchWeather(latitude, longitude, appid)
-        // Observe weather data
-        viewModel.weatherLiveData.observe(viewLifecycleOwner, Observer { weather ->
-            Log.d("TAG", "onCreateView: ${weather.main.temp}")
-            binding.temperatureTextView.text = "Temp: ${weather.main.temp}°C"
-            binding.locationTextView.text = weather.name
-            binding.humidityTextView.text = "Humidity: ${weather.main.humidity}"
-            binding.tempMaxTextView.text = "Maximum:\n${weather.main.temp_max}°C"
-            binding.tempMinTextView.text = "Minimum:\n${weather.main.temp_min}°C"
-            binding.pressureTextView.text = "Pressure: ${weather.main.pressure} Pa"
-
-        })
+//        viewModel.fetchWeather(latitude, longitude, appid)
+//        // Observe weather data
+//        viewModel.weatherLiveData.observe(viewLifecycleOwner, Observer { weather ->
+//            Log.d("TAG", "onCreateView: ${weather.main.temp}")
+//            binding.temperatureTextView.text = "Temp: ${weather.main.temp}°C"
+//            binding.locationTextView.text = weather.name
+//            binding.humidityTextView.text = "Humidity: ${weather.main.humidity}"
+//            binding.tempMaxTextView.text = "Maximum:\n${weather.main.temp_max}°C"
+//            binding.tempMinTextView.text = "Minimum:\n${weather.main.temp_min}°C"
+//            binding.pressureTextView.text = "Pressure: ${weather.main.pressure} Pa"
+//
+//        })
 
     }
 
-    private fun getCoordinates(locationName: String) {
+
+    private fun getCoordinates(locationName: String): Pair<Double?, Double?> {
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
-        try {
-            val addresses = geocoder.getFromLocationName(locationName, 1)
-            if (addresses != null && addresses.isNotEmpty()) {
-                val address = addresses[0]
-                val latitude = address.latitude
-                val longitude = address.longitude
 
-                // Show result or use it as needed
-             //   binding.coordinatesText.text = "Lat: $latitude, Lon: $longitude"
+        val addresses = geocoder.getFromLocationName(locationName, 1)
+        if (addresses != null && addresses.isNotEmpty()) {
+            val address = addresses[0]
+            val latitude = address.latitude
+            val longitude = address.longitude
 
-                Toast.makeText(requireContext(), "GeoLocation:"+latitude+" "+longitude, Toast.LENGTH_SHORT).show()
+            return Pair(latitude, longitude)
 
-            } else {
-                Toast.makeText(requireContext(), "Location not found", Toast.LENGTH_SHORT).show()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(requireContext(), "Error getting coordinates", Toast.LENGTH_SHORT).show()
+
+            Toast.makeText(
+                requireContext(),
+                "GeoLocation:" + latitude + " " + longitude,
+                Toast.LENGTH_SHORT
+            ).show()
+
+        } else {
+            Toast.makeText(requireContext(), "Location not found", Toast.LENGTH_SHORT).show()
+
+
+
+            return Pair(null, null)
         }
     }
 
