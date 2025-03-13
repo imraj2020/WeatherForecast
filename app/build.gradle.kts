@@ -28,7 +28,7 @@ android {
             )
         }
     }
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
     }
     compileOptions {
@@ -70,8 +70,12 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     // Room Database
-    implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1") // Add this line
+    implementation("androidx.room:room-runtime:2.6.1") // Room runtime dependency
+    kapt("androidx.room:room-compiler:2.6.1") // Room annotation processor
+
+    //livedata
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
 
     // Location services
     implementation("com.google.android.gms:play-services-location:21.0.1")

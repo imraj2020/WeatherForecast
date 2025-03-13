@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cse.weather.DataClass.CurrentWeatherDataClass
 import com.cse.weather.Repo.WeatherRepository
+import com.cse.weather.roomdb.weatherentity
 import kotlinx.coroutines.launch
 
 
@@ -18,14 +19,17 @@ class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> get() = _error
 
-    fun fetchWeather(lat: Double, lon: Double, apiKey: String) {
+
+
+    fun fetchAndSaveWeather(lat: Double?, lon: Double?, apiKey: String) {
         viewModelScope.launch {
-            try {
-                val response = repository.getWeather(lat, lon, apiKey)
-                _weatherLiveData.postValue(response)
-            } catch (e: Exception) {
-                _error.postValue("Failed to load weather: ${e.message}")
-            }
+            repository.fetchAndSaveWeather(lat, lon, apiKey)
         }
+    }
+
+
+
+    fun getSavedWeather(): LiveData<weatherentity> {
+        return repository.getSavedWeather()
     }
 }

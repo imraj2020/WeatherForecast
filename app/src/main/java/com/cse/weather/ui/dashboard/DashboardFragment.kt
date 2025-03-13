@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.cse.weather.NetworkCall.RetrofitClient
 import com.cse.weather.Repo.WeatherRepository
 import com.cse.weather.databinding.FragmentDashboardBinding
+import com.cse.weather.roomdb.WeatherDatabase
 import com.cse.weather.ui.home.HomeViewModel
 import com.cse.weather.ui.home.HomeViewModelFactory
 import java.util.Locale
@@ -45,7 +46,8 @@ class DashboardFragment : Fragment() {
 
 
         val apiService = RetrofitClient.instance
-        val repository = WeatherRepository(apiService)
+        val database = WeatherDatabase.getDatabase(requireContext())
+        val repository = WeatherRepository(apiService, database.weatherDao())
 
         viewModel = ViewModelProvider(
             this,
